@@ -1,0 +1,74 @@
+#include <stdio.h>
+
+// Function to check if a year is a leap year
+int isLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+// Function to calculate the day of the week for Jan 1st of the given year
+// Returns: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+int getFirstDayOfYear(int year) {
+    int d = 1, m = 1, y = year;
+    int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    y -= m < 3;
+    return (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
+}
+
+int main() {
+    int year;
+    
+    // Input
+    printf("Enter the year: ");
+    if (scanf("%d", &year) != 1 || year < 1) {
+        printf("Invalid input. Please enter a valid positive year.\n");
+        return 1;
+    }
+
+    // Month names and days in each month
+    char *months[] = {
+        "January", "February", "March", "April", 
+        "May", "June", "July", "August", 
+        "September", "October", "November", "December"
+    };
+    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Adjust February for leap years
+    if (isLeapYear(year)) {
+        daysInMonth[1] = 29;
+    }
+
+    int startDay = getFirstDayOfYear(year);
+
+    printf("\n==============================\n");
+    printf("        CALENDAR - %d\n", year);
+    printf("==============================\n");
+
+    // Loop through all 12 months
+    for (int m = 0; m < 12; m++) {
+        printf("\n  ------------ %s ------------\n", months[m]);
+        printf("  Sun  Mon  Tue  Wed  Thu  Fri  Sat\n");
+
+        // Print leading spaces for the first week
+        for (int space = 0; space < startDay; space++) {
+            printf("     ");
+        }
+
+        // Print all days of the current month
+        for (int day = 1; day <= daysInMonth[m]; day++) {
+            printf("%5d", day);
+
+            // Move to the next line after Saturday
+            if (++startDay > 6) {
+                startDay = 0;
+                printf("\n");
+            }
+        }
+
+        // Ensure a newline at the end of the month if it didn't end on Saturday
+        if (startDay != 0) {
+            printf("\n");
+        }
+    }
+
+    return 0;
+}
